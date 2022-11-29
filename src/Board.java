@@ -33,14 +33,7 @@ public class Board {
         whiteStones.add(new PairInt(4, 4));
         blackStones.add(new PairInt(3, 4));
         blackStones.add(new PairInt(4, 3));
-        whitePossibleMoves.add(new PairInt(3, 5));
-        whitePossibleMoves.add(new PairInt(2, 4));
-        whitePossibleMoves.add(new PairInt(4, 2));
-        whitePossibleMoves.add(new PairInt(5, 3));
-        blackPossibleMoves.add(new PairInt(3, 2));
-        blackPossibleMoves.add(new PairInt(2, 3));
-        blackPossibleMoves.add(new PairInt(5, 4));
-        blackPossibleMoves.add(new PairInt(4, 5));
+        recountPossibleMoves();
     }
 
     public void setOpponent(int opponent) {

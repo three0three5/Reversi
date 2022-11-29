@@ -28,9 +28,22 @@ public final class ConstStrings {
             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             """;
     public static final String SCORES_PAGE_TEXT = "Для выхода в главное меню введите любой текст...";
-    public static final String PLAYER_SCORE = "Лучший счет игрока: ";
+    public static final String PLAYER_SCORE = "Лучший счет игрока против ботов: ";
     public static final String WHITE_SCORE = "Лучший счет ПЛЮСОВ в режиме pvp: ";
     public static final String BLACK_SCORE = "Лучший счет МИНУСОВ в режиме pvp: ";
     public static final String NO_SCORE = "Ой, а ведь таких игр не проводилось!";
+    public static final String YOUR_MOVE =
+            """
+            , ваш ход!
+            Ввод хода строго из большой английской буквы и цифры в 1 строке без пробелов!
+            Если хотите отменить ход, введите cancel.
+            Если хотите добавить/убрать подсветку возможных ходов, введите P или NP.
+            Если хотите выйти из игры досрочно, введите exit.
+            """;
+    public static final String WRONG_MOVE = "Ваш ход некорректен!";
+    public static final String BOARD_TITLE = "  A B C D E F G H";
+    public static final String NO_MOVES_WHITE = "Нет ходов. Белые пропускают ход...";
+    public static final String NO_MOVES_BLACK = "Нет ходов. Черные пропускают ход...";
+    public static final String FINISHER = "Игра закончена! Победитель: ";
     private ConstStrings() {}
 }

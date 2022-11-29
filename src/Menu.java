@@ -8,8 +8,8 @@ public class Menu {
 
     private Menu() {}
 
-    public static void setBestScore(int score, int color) {
-        switch (color) {
+    public static void setBestScore(int score, int playersOrBot) {
+        switch (playersOrBot) {
             case 1 -> {
                 if (bestScore < score) bestScore = score;
             }
@@ -58,6 +58,24 @@ public class Menu {
         System.out.println(ConstStrings.SCORES_PAGE_TEXT);
         sc.next();
     }
+
+    private static void finishGame(int opponent) {
+        PairInt result = board.getScore();
+        String winner = result.x > result.y ? "Белые" : "Черные";
+        System.out.print(ConstStrings.FINISHER + winner + "!");
+        System.out.println();
+        if (opponent == 0) {
+            bestBlackScore = Math.max(bestBlackScore, result.y);
+            bestWhiteScore = Math.max(bestWhiteScore, result.x);
+        }
+    }
+    private static void startGame(int opponent) {
+        board.setOpponent(opponent);
+        while (board.isRunning()) {
+            board.makeMove(sc);
+        }
+        finishGame(opponent);
+    }
     private static int mainPage() {
         return switch (pageSwitch(ConstStrings.GREETING, 3)) {
             case 1 -> 2; // chose begin game
@@ -77,15 +95,15 @@ public class Menu {
                 }
                 case 4 -> {
                     state = 1;
-                    board.startGame(1);
+                    startGame(0);
                 }
                 case 5 -> {
                     state = 1;
-                    board.startGame(2);
+                    startGame(1);
                 }
                 case 6 -> {
                     state = 1;
-                    board.startGame(3);
+                    startGame(2);
                 }
             }
         }

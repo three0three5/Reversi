@@ -43,6 +43,9 @@ public class Board {
     public void setBotColor(boolean color) {
         botColorIsWhite = color;
     }
+    public boolean getHumanColor() {
+        return !botColorIsWhite;
+    }
     public void setBot(Bot bot) {
         this.bot = bot;
     }
@@ -59,6 +62,63 @@ public class Board {
 
     public PairInt getScore() {
         return new PairInt(whiteStones.size(), blackStones.size());
+    }
+    public void placePiece(int x, int y) {
+        if (x < 0 || x > 7 || y < 0 || y > 7) {
+            return;
+        }
+        previousBoards.pushLastMove(new PairInt(x, y));
+        previousBoards.pushLastColor(whiteToMove);
+        for (int i = 0; i < 9; ++i) {
+            if (isLine(x, y, i)) {
+                previousBoards.pushFlipped(flipPieces(x, y, i));
+            }
+        }
+        recountPossibleMoves();
+        if (opponent != 0) {
+            if (botColorIsWhite) {
+                bot.setSettings(true, fields, whitePossibleMoves);
+            } else {
+                bot.setSettings(false, fields, blackPossibleMoves);
+            }
+        }
+    }
+
+    public void cancelMove() {
+        if (previousBoards.isEmpty()) {
+            System.out.println("Нечего отменять!");
+            return;
+        }
+        PairInt previousMove = previousBoards.popLastMove();
+        if (fields[previousMove.x][previousMove.y] == '+') {
+            whiteStones.remove(previousMove);
+        } else {
+            blackStones.remove(previousMove);
+        }
+        fields[previousMove.x][previousMove.y] = ' ';
+        ArrayList<PairInt> flippedPieces = previousBoards.popFlipped();
+        for (PairInt x: flippedPieces) {
+            if (fields[x.x][x.y] == '+') {
+                fields[x.x][x.y] = '-';
+                PairInt stone = new PairInt(x.x, x.y);
+                blackStones.add(stone);
+                whiteStones.remove(stone);
+            } else {
+                fields[x.x][x.y] = '+';
+                PairInt stone = new PairInt(x.x, x.y);
+                whiteStones.add(stone);
+                blackStones.remove(stone);
+            }
+        }
+        recountPossibleMoves();
+        whiteToMove = previousBoards.popLastColor();
+        if (opponent != 0) {
+            if (botColorIsWhite) {
+                bot.setSettings(true, fields, whitePossibleMoves);
+            } else {
+                bot.setSettings(false, fields, blackPossibleMoves);
+            }
+        }
     }
 
     private static boolean isCorrectCoords(String s) {
@@ -137,7 +197,7 @@ public class Board {
         return new PairInt(-1, 0);
     }
 
-    private static boolean isBoardCoords(int x, int y) {
+    public static boolean isBoardCoords(int x, int y) {
         return x <= 7 && x >= 0 && y <= 7 && y >= 0;
     }
 
@@ -186,47 +246,6 @@ public class Board {
         }
     }
 
-    private void placePiece(int x, int y) {
-        previousBoards.pushLastMove(new PairInt(x, y));
-        previousBoards.pushLastColor(whiteToMove);
-        for (int i = 0; i < 9; ++i) {
-            if (isLine(x, y, i)) {
-                previousBoards.pushFlipped(flipPieces(x, y, i));
-            }
-        }
-        recountPossibleMoves();
-    }
-
-    private void cancelMove() {
-        if (previousBoards.isEmpty()) {
-            System.out.println("Нечего отменять!");
-            return;
-        }
-        PairInt previousMove = previousBoards.popLastMove();
-        if (fields[previousMove.x][previousMove.y] == '+') {
-            whiteStones.remove(previousMove);
-        } else {
-            blackStones.remove(previousMove);
-        }
-        fields[previousMove.x][previousMove.y] = ' ';
-        ArrayList<PairInt> flippedPieces = previousBoards.popFlipped();
-        for (PairInt x: flippedPieces) {
-            if (fields[x.x][x.y] == '+') {
-                fields[x.x][x.y] = '-';
-                PairInt stone = new PairInt(x.x, x.y);
-                blackStones.add(stone);
-                whiteStones.remove(stone);
-            } else {
-                fields[x.x][x.y] = '+';
-                PairInt stone = new PairInt(x.x, x.y);
-                whiteStones.add(stone);
-                blackStones.remove(stone);
-            }
-        }
-        recountPossibleMoves();
-        whiteToMove = previousBoards.popLastColor();
-    }
-
     private void applyOption(String option) {
         if ("P".equals(option)) {
             System.out.println("Включаем подсветку...");
@@ -235,12 +254,7 @@ public class Board {
             System.out.println("Выключаем подсветку...");
             highlight = false;
         } else if ("cancel".equals(option)) {
-            if (opponent == 0) {
-                cancelMove();
-            } else {
-                cancelMove();
-                cancelMove();
-            }
+            cancelMove();
         } else {
             exit = true;
         }
@@ -299,6 +313,9 @@ public class Board {
                 bot.setSettings(false, fields, blackPossibleMoves);
             }
             PairInt move = bot.askBot("easy");
+            char moveX = (char) ('A' + move.x);
+            char moveY = (char) ('1' + move.y);
+            System.out.print("\nБот ходит: " + moveX + moveY);
             placePiece(move.x, move.y);
         } else if (opponent == 2) {
             if (botColorIsWhite) {

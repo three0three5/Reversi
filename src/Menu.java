@@ -61,13 +61,20 @@ public class Menu {
         }
         PairInt result = board.getScore();
         String winner = result.x > result.y ? "Белые" : "Черные";
+        if (result.x == result.y) {
+            winner = "Дружба";
+        }
         System.out.print(ConstStrings.FINISHER + winner + "!");
         System.out.println();
         if (opponent == 0) {
             bestBlackScore = Math.max(bestBlackScore, result.y);
             bestWhiteScore = Math.max(bestWhiteScore, result.x);
         } else {
-            bestScore = Math.max(bestWhiteScore, result.x);
+            if (board.getHumanColor()) {
+                bestScore = Math.max(bestScore, result.x);
+            } else {
+                bestScore = Math.max(bestScore, result.y);
+            }
         }
     }
     private static void startGame(int opponent) {

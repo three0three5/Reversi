@@ -1,3 +1,5 @@
+import java.util.Set;
+
 public final class ConstStrings {
     public static final String FAREWELL = "Пока!\n";
     public static final String OPTIONS_WARNING =
@@ -45,5 +47,13 @@ public final class ConstStrings {
     public static final String NO_MOVES_WHITE = "Нет ходов. Белые пропускают ход...";
     public static final String NO_MOVES_BLACK = "Нет ходов. Черные пропускают ход...";
     public static final String FINISHER = "Игра закончена! Победитель: ";
+    public static final Set<String> GAME_OPTIONS = Set.of(
+            "exit", "cancel", "P", "NP"
+    );
+    public static final String CHOOSE_COLOR = """
+            Выберите свой цвет:
+            1. ПЛЮСЫ
+            2. МИНУСЫ
+            """;
     private ConstStrings() {}
 }

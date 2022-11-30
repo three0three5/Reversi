@@ -4,23 +4,9 @@ public class Menu {
     private static int bestScore = -1;
     private static int bestWhiteScore = -1;
     private static int bestBlackScore = -1;
-    private static final Board board = new Board();
+    private static Board board;
 
     private Menu() {}
-
-    public static void setBestScore(int score, int playersOrBot) {
-        switch (playersOrBot) {
-            case 1 -> {
-                if (bestScore < score) bestScore = score;
-            }
-            case 2 -> {
-                if (bestWhiteScore < score) bestWhiteScore = score;
-            }
-            case 3 -> {
-                if (bestBlackScore < score) bestBlackScore = score;
-            }
-        }
-    }
     private static int optionsCheck(String option, int numberOfPoints) {
         for (int i = 1; i <= numberOfPoints; ++i) {
             if (Integer.toString(i).equals(option)) {
@@ -59,7 +45,20 @@ public class Menu {
         sc.next();
     }
 
+    public static boolean getBotColor() {
+        System.out.println(ConstStrings.CHOOSE_COLOR);
+        int point;
+        String option = sc.next();
+        while((point = optionsCheck(option, 2)) == 0) {
+            System.out.println(ConstStrings.OPTIONS_WARNING);
+            option = sc.next();
+        }
+        return point != 1;
+    }
     private static void finishGame(int opponent) {
+        if (board.wasExit()) {
+            return;
+        }
         PairInt result = board.getScore();
         String winner = result.x > result.y ? "Белые" : "Черные";
         System.out.print(ConstStrings.FINISHER + winner + "!");
@@ -67,10 +66,18 @@ public class Menu {
         if (opponent == 0) {
             bestBlackScore = Math.max(bestBlackScore, result.y);
             bestWhiteScore = Math.max(bestWhiteScore, result.x);
+        } else {
+            bestScore = Math.max(bestWhiteScore, result.x);
         }
     }
     private static void startGame(int opponent) {
+        board = new Board();
         board.setOpponent(opponent);
+        Bot bot = new Bot();
+        board.setBot(bot);
+        if (opponent != 0) {
+            board.setBotColor(getBotColor());
+        }
         while (board.isRunning()) {
             board.makeMove(sc);
         }

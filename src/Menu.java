@@ -27,10 +27,12 @@ public class Menu {
         return point;
     }
     private static int gameFirstPage() {
-        return switch (pageSwitch(ConstStrings.GAME_PAGE_TEXT, 4)) {
+        return switch (pageSwitch(ConstStrings.GAME_PAGE_TEXT, 5)) {
             case 1 -> 4; // chose game with no bot
             case 2 -> 5; // chose game with easy bot
             case 3 -> 6; // chose game with hard bot
+            case 4 -> 1; // exit
+            case 5 -> 7; // bonus mode
             default -> 1;
         };
     }
@@ -69,7 +71,7 @@ public class Menu {
         if (opponent == 0) {
             bestBlackScore = Math.max(bestBlackScore, result.y);
             bestWhiteScore = Math.max(bestWhiteScore, result.x);
-        } else {
+        } else if (opponent == 1 || opponent == 2) {
             if (board.getHumanColor()) {
                 bestScore = Math.max(bestScore, result.x);
             } else {
@@ -82,19 +84,23 @@ public class Menu {
         board.setOpponent(opponent);
         Bot bot = new Bot();
         board.setBot(bot);
-        if (opponent != 0) {
+        if (opponent == 1 || opponent == 2) {
             board.setBotColor(getBotColor());
         }
         while (board.isRunning()) {
+            if (opponent == 3) {
+                board.makeMoveByBots();
+                continue;
+            }
             board.makeMove(sc);
         }
         finishGame(opponent);
     }
     private static int mainPage() {
         return switch (pageSwitch(ConstStrings.GREETING, 3)) {
-            case 1 -> 2; // chose begin game
-            case 2 -> 3; // chose best result
-            default -> 0; // chose exit
+            case 1 -> 2; // begin game was chosen
+            case 2 -> 3; // result was chosen
+            default -> 0; // exit was chosen
         };
     }
     public static void start() {
@@ -118,6 +124,10 @@ public class Menu {
                 case 6 -> {
                     state = 1;
                     startGame(2);
+                }
+                case 7 -> {
+                    state = 1;
+                    startGame(3);
                 }
             }
         }

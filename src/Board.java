@@ -91,13 +91,7 @@ public class Board {
         }
         flippedPieces.push(flipped);
         recountPossibleMoves();
-        if (opponent != 0) {
-            if (botColorIsWhite) {
-                bot.setBoard(true, this, whitePossibleMoves);
-            } else {
-                bot.setBoard(false, this, blackPossibleMoves);
-            }
-        }
+        botUpdate();
         whiteToMove = !whiteToMove;
     }
 
@@ -127,8 +121,18 @@ public class Board {
         }
         recountPossibleMoves();
         whiteToMove = lastMoveByWhite.pop();
-        if (opponent != 0) {
+        botUpdate();
+    }
+
+    private void botUpdate() {
+        if (opponent == 1 || opponent == 2) {
             if (botColorIsWhite) {
+                bot.setBoard(true, this, whitePossibleMoves);
+            } else {
+                bot.setBoard(false, this, blackPossibleMoves);
+            }
+        } else {
+            if (whiteToMove) {
                 bot.setBoard(true, this, whitePossibleMoves);
             } else {
                 bot.setBoard(false, this, blackPossibleMoves);
@@ -297,22 +301,47 @@ public class Board {
         return new PairInt(x_coord, y_coord);
     }
 
-    public void makeMove(Scanner sc) {
-        System.out.println();
+    public void makeMoveByBots() {
+        highlight = true;
+        if (checkForSkips()) return;
+        botUpdate();
+        PairInt move = bot.askBot("easy");
+        char moveX = (char) ('A' + move.x);
+        char moveY = (char) ('1' + move.y);
+        System.out.println("\nЛегкий бот ходит: " + moveX + moveY);
+        placePiece(move.x, move.y);
         this.display();
+        if (checkForSkips()) return;
+        botUpdate();
+        move = bot.askBot("hard");
+        moveX = (char) ('A' + move.x);
+        moveY = (char) ('1' + move.y);
+        System.out.println("\nСложный бот ходит: " + moveX + moveY);
+        placePiece(move.x, move.y);
+        this.display();
+    }
+
+    private boolean checkForSkips() {
         if (whiteToMove && whitePossibleMoves.size() == 0) {
             System.out.println(ConstStrings.NO_MOVES_WHITE);
             ++skips;
             whiteToMove = !whiteToMove;
-            return;
+            return true;
         } else if (!whiteToMove && blackPossibleMoves.size() == 0) {
             System.out.println(ConstStrings.NO_MOVES_BLACK);
             ++skips;
             whiteToMove = !whiteToMove;
-            return;
+            return true;
         } else {
             skips = 0;
         }
+        return false;
+    }
+
+    public void makeMove(Scanner sc) {
+        System.out.println();
+        this.display();
+        if (checkForSkips()) return;
         if (opponent == 0 || whiteToMove != botColorIsWhite) {
             PairInt move = askHuman(sc);
             if (move.x == -1) {
@@ -331,11 +360,7 @@ public class Board {
             System.out.print("\nБот ходит: " + moveX + moveY);
             placePiece(move.x, move.y);
         } else if (opponent == 2) {
-            if (botColorIsWhite) {
-                bot.setBoard(true, this, whitePossibleMoves);
-            } else {
-                bot.setBoard(false, this, blackPossibleMoves);
-            }
+            botUpdate();
             PairInt move = bot.askBot("hard");
             char moveX = (char) ('A' + move.x);
             char moveY = (char) ('1' + move.y);

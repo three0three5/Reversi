@@ -2,7 +2,7 @@ import java.util.HashSet;
 
 public class Bot {
     private boolean isWhite;
-    private char[][] fields;
+    private Board board;
     private HashSet<PairInt> moves;
     private static boolean isCorner(PairInt move) {
         return move.x == 0 && move.y == 0 || move.x == 7 && move.y == 7 ||
@@ -11,10 +11,10 @@ public class Bot {
     private static boolean isSide(PairInt move) {
         return move.x == 0 || move.x == 7 || move.y == 0 || move.y == 7;
     }
-    public void setSettings(boolean color, char[][] fields, HashSet<PairInt> moves) {
+    public void setBoard(boolean color, Board board, HashSet<PairInt> moves) {
         this.moves = moves;
         this.isWhite = color;
-        this.fields = fields;
+        this.board = board;
     }
 
     private int lineCounter(PairInt move, int directionInt, boolean sideLine) {
@@ -25,7 +25,7 @@ public class Bot {
         x += direction.x;
         y += direction.y;
         while (Board.isBoardCoords(x, y) &&
-                (isWhite ? fields[x][y] == '-' : fields[x][y] == '+')) {
+                (isWhite ? board.getFields(x, y) == '-' : board.getFields(x, y) == '+')) {
             if (!sideLine || isSide(new PairInt(x, y))) {
                 ++lineLength;
             }
@@ -33,7 +33,7 @@ public class Bot {
             y += direction.y;
         }
         if (!Board.isBoardCoords(x, y) ||
-                (isWhite ? fields[x][y] != '+' : fields[x][y] != '-')) {
+                (isWhite ? board.getFields(x, y) != '+' : board.getFields(x, y) != '-')) {
             return 0;
         }
         return lineLength;
@@ -49,6 +49,9 @@ public class Bot {
         return result;
     }
     private double findCost(PairInt move) {
+        if (move.x == -1) {
+            return 0;
+        }
         double sum = 0;
         if (isCorner(move)) {
             sum += 0.8;
@@ -56,9 +59,7 @@ public class Bot {
             sum += 0.4;
         }
         int onSide = piecesFlipped(move, true);
-        System.out.println("On side: " + onSide + " for " + move.x + " " + move.y);
         int flip = piecesFlipped(move, false);
-        System.out.println("In total: " + flip + " for " + move.x + " " + move.y);
         return sum + onSide + flip;
     }
     private PairInt simpleAnswer() {
@@ -74,12 +75,34 @@ public class Bot {
                 bestPiece = x;
             }
         }
-        System.out.println("Cost of this move: " + bestCost + " for " + bestPiece.x + " " + bestPiece.y);
+        //System.out.println("Cost of this move: " + bestCost + " for " + bestPiece.x + " " + bestPiece.y);
         return bestPiece;
     }
 
     private PairInt bestAnswer() {
-        return moves.iterator().next();
+        PairInt bestPiece = moves.iterator().next();
+        double bestCost = findCost(bestPiece);
+        HashSet<PairInt> currentMoves = new HashSet<>();
+        for (PairInt x: moves) {
+            currentMoves.add(new PairInt(x));
+        }
+        for (PairInt x: currentMoves) {
+            double currentCost = findCost(x);
+            double opponentCost;
+            board.placePiece(x.x, x.y);
+            if ((board.getCurrentColor() == isWhite) || !board.isRunning()) {
+                opponentCost = 0;
+            } else {
+                opponentCost = findCost(simpleAnswer());
+            }
+            currentCost -= opponentCost;
+            if (currentCost > bestCost) {
+                bestCost = currentCost;
+                bestPiece = x;
+            }
+            board.cancelMove();
+        }
+        return bestPiece;
     }
     public PairInt askBot(String level) {
         if ("easy".equals(level)) {

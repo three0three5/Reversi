@@ -6,6 +6,11 @@ public class PairInt {
         this.x = x;
         this.y = y;
     }
+
+    public PairInt(PairInt other) {
+        this.x = other.x;
+        this.y = other.y;
+    }
     @Override
     public int hashCode() {
         int hash = 17;

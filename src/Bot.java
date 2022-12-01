@@ -81,7 +81,7 @@ public class Bot {
 
     private PairInt bestAnswer() {
         PairInt bestPiece = moves.iterator().next();
-        double bestCost = findCost(bestPiece);
+        double bestCost = -1000;
         HashSet<PairInt> currentMoves = new HashSet<>();
         for (PairInt x: moves) {
             currentMoves.add(new PairInt(x));

@@ -40,7 +40,7 @@ public class Bot {
     }
     private int piecesFlipped(PairInt move, boolean onlyOnSide) {
         int result = 0;
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < 9; ++i) {
             if (i == 4) {
                 continue;
             }

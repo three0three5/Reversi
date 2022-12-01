@@ -72,11 +72,13 @@ public class Board {
         }
         previousMove.push(new PairInt(x, y));
         lastMoveByWhite.push(whiteToMove);
+        ArrayList<PairInt> flipped = new ArrayList<>();
         for (int i = 0; i < 9; ++i) {
             if (isLine(x, y, i)) {
-                flippedPieces.push(flipPieces(x, y, i));
+                flipPieces(x, y, i, flipped);
             }
         }
+        flippedPieces.push(flipped);
         recountPossibleMoves();
         if (opponent != 0) {
             if (botColorIsWhite) {
@@ -144,9 +146,8 @@ public class Board {
         }
     }
 
-    private ArrayList<PairInt> flipPieces(int x, int y, int directionInt) {
+    private void flipPieces(int x, int y, int directionInt, ArrayList<PairInt> flipped) {
         PairInt direction = new PairInt(directionInt % 3 - 1, directionInt / 3 - 1);
-        ArrayList<PairInt> flipped = new ArrayList<>();
         if (whiteToMove) {
             fields[x][y] = '+';
             whiteStones.add(new PairInt(x, y));
@@ -175,7 +176,6 @@ public class Board {
                 y += direction.y;
             }
         }
-        return flipped;
     }
 
     private PairInt findTail(int x, int y, int directionInt, boolean forWhite) {

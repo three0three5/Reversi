@@ -6,11 +6,6 @@ public class PairInt {
         this.x = x;
         this.y = y;
     }
-
-    public PairInt(PairInt other) {
-        this.x = other.x;
-        this.y = other.y;
-    }
     @Override
     public int hashCode() {
         int hash = 17;
@@ -20,10 +15,9 @@ public class PairInt {
     }
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof PairInt)) {
+        if (!(obj instanceof PairInt other)) {
             return false;
         }
-        PairInt other = (PairInt) obj;
         return (other.x == this.x) && (other.y == this.y);
     }
 }

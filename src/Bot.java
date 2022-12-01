@@ -22,16 +22,18 @@ public class Bot {
         int x = move.x, y = move.y;
         PairInt direction = new PairInt(directionInt % 3 - 1, directionInt / 3 - 1);
         int lineLength = 0;
+        x += direction.x;
+        y += direction.y;
         while (Board.isBoardCoords(x, y) &&
                 (isWhite ? fields[x][y] == '-' : fields[x][y] == '+')) {
-            x += direction.x;
-            y += direction.y;
             if (!sideLine || isSide(new PairInt(x, y))) {
                 ++lineLength;
             }
+            x += direction.x;
+            y += direction.y;
         }
-        if (Board.isBoardCoords(x, y) &&
-                isWhite ? fields[x][y] != '+' : fields[x][y] != '-') {
+        if (!Board.isBoardCoords(x, y) ||
+                (isWhite ? fields[x][y] != '+' : fields[x][y] != '-')) {
             return 0;
         }
         return lineLength;
@@ -53,9 +55,11 @@ public class Bot {
         } else if (isSide(move)) {
             sum += 0.4;
         }
-        sum += piecesFlipped(move, true);
-        sum += piecesFlipped(move, false);
-        return sum;
+        int onSide = piecesFlipped(move, true);
+        System.out.println("On side: " + onSide + " for " + move.x + " " + move.y);
+        int flip = piecesFlipped(move, false);
+        System.out.println("In total: " + flip + " for " + move.x + " " + move.y);
+        return sum + onSide + flip;
     }
     private PairInt simpleAnswer() {
         if (moves.isEmpty()) {
@@ -70,6 +74,7 @@ public class Bot {
                 bestPiece = x;
             }
         }
+        System.out.println("Cost of this move: " + bestCost + " for " + bestPiece.x + " " + bestPiece.y);
         return bestPiece;
     }
 

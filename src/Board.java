@@ -2,12 +2,15 @@
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class Board {
     private boolean exit = false;
     private boolean highlight = false;
     private int skips = 0;
-    private final BoardDiff previousBoards = new BoardDiff();
+    private final Stack<PairInt> previousMove = new Stack<>();
+    private final Stack<ArrayList<PairInt>> flippedPieces = new Stack<>();
+    private final Stack<Boolean> lastMoveByWhite = new Stack<>();
     private boolean whiteToMove = true;
     private final char[][] fields;
     private int opponent = 0;
@@ -67,11 +70,11 @@ public class Board {
         if (x < 0 || x > 7 || y < 0 || y > 7) {
             return;
         }
-        previousBoards.pushLastMove(new PairInt(x, y));
-        previousBoards.pushLastColor(whiteToMove);
+        previousMove.push(new PairInt(x, y));
+        lastMoveByWhite.push(whiteToMove);
         for (int i = 0; i < 9; ++i) {
             if (isLine(x, y, i)) {
-                previousBoards.pushFlipped(flipPieces(x, y, i));
+                flippedPieces.push(flipPieces(x, y, i));
             }
         }
         recountPossibleMoves();
@@ -85,33 +88,31 @@ public class Board {
     }
 
     public void cancelMove() {
-        if (previousBoards.isEmpty()) {
+        if (previousMove.isEmpty()) {
             System.out.println("Нечего отменять!");
             return;
         }
-        PairInt previousMove = previousBoards.popLastMove();
-        if (fields[previousMove.x][previousMove.y] == '+') {
-            whiteStones.remove(previousMove);
+        PairInt move = previousMove.pop();
+        if (fields[move.x][move.y] == '+') {
+            whiteStones.remove(move);
         } else {
-            blackStones.remove(previousMove);
+            blackStones.remove(move);
         }
-        fields[previousMove.x][previousMove.y] = ' ';
-        ArrayList<PairInt> flippedPieces = previousBoards.popFlipped();
-        for (PairInt x: flippedPieces) {
+        fields[move.x][move.y] = ' ';
+        ArrayList<PairInt> flipped = flippedPieces.pop();
+        for (PairInt x: flipped) {
             if (fields[x.x][x.y] == '+') {
                 fields[x.x][x.y] = '-';
-                PairInt stone = new PairInt(x.x, x.y);
-                blackStones.add(stone);
-                whiteStones.remove(stone);
+                blackStones.add(new PairInt(x.x, x.y));
+                whiteStones.remove(new PairInt(x.x, x.y));
             } else {
                 fields[x.x][x.y] = '+';
-                PairInt stone = new PairInt(x.x, x.y);
-                whiteStones.add(stone);
-                blackStones.remove(stone);
+                whiteStones.add(new PairInt(x.x, x.y));
+                blackStones.remove(new PairInt(x.x, x.y));
             }
         }
         recountPossibleMoves();
-        whiteToMove = previousBoards.popLastColor();
+        whiteToMove = lastMoveByWhite.pop();
         if (opponent != 0) {
             if (botColorIsWhite) {
                 bot.setSettings(true, fields, whitePossibleMoves);

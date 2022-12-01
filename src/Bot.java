@@ -1,7 +1,8 @@
 import java.util.HashSet;
-
+import java.util.Random;
 public class Bot {
     private boolean isWhite;
+    private final Random rand = new Random();
     private Board board;
     private HashSet<PairInt> moves;
     private static boolean isCorner(PairInt move) {
@@ -71,6 +72,9 @@ public class Bot {
         for (PairInt x: moves) {
             double cost = findCost(x);
             if (cost > bestCost) {
+                bestCost = cost;
+                bestPiece = x;
+            } else if (bestCost == cost && rand.nextDouble() > 0.5) {
                 bestCost = cost;
                 bestPiece = x;
             }

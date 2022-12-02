@@ -356,5 +356,15 @@ public class Board {
             }
             System.out.println();
         }
+        if (highlight) {
+            HashSet<PairInt> moves = whiteToMove ? whitePossibleMoves : blackPossibleMoves;
+            System.out.print("Возможные ходы: ");
+            for (PairInt move: moves) {
+                System.out.print((char) (move.x + 'A'));
+                System.out.print((char) (move.y + '1'));
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
     }
 }

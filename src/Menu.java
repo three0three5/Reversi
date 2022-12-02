@@ -80,10 +80,13 @@ public class Menu {
     private static void startGame(int opponent) {
         board = new Board();
         board.setOpponent(opponent);
-        Bot bot = new Bot();
-        board.setBot(bot);
+        Bot bot = new EasyBot();
         if (opponent != 0) {
             board.setBotColor(getBotColor());
+            if (opponent == 2) {
+                bot = new HardBot();
+            }
+            board.setBot(bot);
         }
         while (board.isRunning()) {
             board.makeMove(sc);

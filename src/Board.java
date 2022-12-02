@@ -52,6 +52,13 @@ public class Board {
     public void setBot(Bot bot) {
         this.bot = bot;
     }
+    public HashSet<PairInt> getMoves(boolean isWhite) {
+        if (isWhite) {
+            return whitePossibleMoves;
+        } else {
+            return blackPossibleMoves;
+        }
+    }
 
     public boolean isRunning() {
         if (skips == 2 || exit) {
@@ -319,24 +326,13 @@ public class Board {
                 return;
             }
             placePiece(move.x, move.y);
-        } else if (opponent == 1) {
+        } else {
             if (botColorIsWhite) {
                 bot.setBoard(true, this, whitePossibleMoves);
             } else {
                 bot.setBoard(false, this, blackPossibleMoves);
             }
-            PairInt move = bot.askBot("easy");
-            char moveX = (char) ('A' + move.x);
-            char moveY = (char) ('1' + move.y);
-            System.out.print("\nБот ходит: " + moveX + moveY);
-            placePiece(move.x, move.y);
-        } else if (opponent == 2) {
-            if (botColorIsWhite) {
-                bot.setBoard(true, this, whitePossibleMoves);
-            } else {
-                bot.setBoard(false, this, blackPossibleMoves);
-            }
-            PairInt move = bot.askBot("hard");
+            PairInt move = bot.askBot();
             char moveX = (char) ('A' + move.x);
             char moveY = (char) ('1' + move.y);
             System.out.print("\nБот ходит: " + moveX + moveY);

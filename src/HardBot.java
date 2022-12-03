@@ -20,6 +20,12 @@ public class HardBot extends AbstractBot implements Bot {
                 easyBot.askBot();
                 opponentCost = easyBot.getLastCost();
             }
+//            System.out.print("\nFor move " +
+//                    (char) (x.x + 'A') + (char) (x.y + '1') +
+//                    " with " + currentCost
+//                    + " best opponent is " +
+//                    (char) (easyBot.askBot().x + 'A') +
+//                    (char) (easyBot.askBot().y + '1') + " with " + opponentCost);
             currentCost -= opponentCost;
             if (currentCost > bestCost) {
                 bestCost = currentCost;

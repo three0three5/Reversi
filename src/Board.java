@@ -5,13 +5,16 @@ import java.util.Scanner;
 import java.util.Stack;
 
 public class Board {
+    private char possibleMoveSymbol = 'o';
+    private char whiteSymbol = '+';
+    private char blackSymbol = '-';
     private boolean exit = false;
     private boolean highlight = false;
     private int skips = 0;
     private final Stack<PairInt> previousMove = new Stack<>();
     private final Stack<ArrayList<PairInt>> flippedPieces = new Stack<>();
     private final Stack<Boolean> lastMoveByWhite = new Stack<>();
-    private boolean whiteToMove = true;
+    private boolean whiteToMove = false;
     private final char[][] fields;
     private int opponent = 0;
     private final HashSet<PairInt> whiteStones = new HashSet<>();
@@ -29,17 +32,28 @@ public class Board {
                 fields[i][j] = ' ';
             }
         }
-        fields[3][3] = '+';
-        fields[4][4] = '+';
-        fields[3][4] = '-';
-        fields[4][3] = '-';
+        recolorCentralPieces();
         whiteStones.add(new PairInt(3, 3));
         whiteStones.add(new PairInt(4, 4));
         blackStones.add(new PairInt(3, 4));
         blackStones.add(new PairInt(4, 3));
         recountPossibleMoves();
     }
-
+    private void recolorCentralPieces() {
+        fields[3][3] = whiteSymbol;
+        fields[4][4] = whiteSymbol;
+        fields[3][4] = blackSymbol;
+        fields[4][3] = blackSymbol;
+    }
+    public void setSkin(char[] skin) {
+        whiteSymbol = skin[0];
+        blackSymbol = skin[1];
+        possibleMoveSymbol = skin[2];
+        recolorCentralPieces();
+    }
+    public char[] getSkin() {
+        return new char[]{whiteSymbol, blackSymbol, possibleMoveSymbol};
+    }
     public void setOpponent(int opponent) {
         this.opponent = opponent;
     }
@@ -114,7 +128,7 @@ public class Board {
             return;
         }
         PairInt move = previousMove.pop();
-        if (fields[move.x][move.y] == '+') {
+        if (fields[move.x][move.y] == whiteSymbol) {
             whiteStones.remove(move);
         } else {
             blackStones.remove(move);
@@ -122,12 +136,12 @@ public class Board {
         fields[move.x][move.y] = ' ';
         ArrayList<PairInt> flipped = flippedPieces.pop();
         for (PairInt x: flipped) {
-            if (fields[x.x][x.y] == '+') {
-                fields[x.x][x.y] = '-';
+            if (fields[x.x][x.y] == whiteSymbol) {
+                fields[x.x][x.y] = blackSymbol;
                 blackStones.add(new PairInt(x.x, x.y));
                 whiteStones.remove(new PairInt(x.x, x.y));
             } else {
-                fields[x.x][x.y] = '+';
+                fields[x.x][x.y] = whiteSymbol;
                 whiteStones.add(new PairInt(x.x, x.y));
                 blackStones.remove(new PairInt(x.x, x.y));
             }
@@ -168,17 +182,17 @@ public class Board {
     private void flipPieces(int x, int y, int directionInt, ArrayList<PairInt> flipped) {
         PairInt direction = new PairInt(directionInt % 3 - 1, directionInt / 3 - 1);
         if (whiteToMove) {
-            fields[x][y] = '+';
+            fields[x][y] = whiteSymbol;
             whiteStones.add(new PairInt(x, y));
         } else {
-            fields[x][y] = '-';
+            fields[x][y] = blackSymbol;
             blackStones.add(new PairInt(x, y));
         }
         x += direction.x;
         y += direction.y;
         if (whiteToMove) {
-            while (fields[x][y] != '+') {
-                fields[x][y] = '+';
+            while (fields[x][y] != whiteSymbol) {
+                fields[x][y] = whiteSymbol;
                 whiteStones.add(new PairInt(x, y));
                 blackStones.remove(new PairInt(x, y));
                 flipped.add(new PairInt(x, y));
@@ -186,8 +200,8 @@ public class Board {
                 y += direction.y;
             }
         } else {
-            while (fields[x][y] != '-') {
-                fields[x][y] = '-';
+            while (fields[x][y] != blackSymbol) {
+                fields[x][y] = blackSymbol;
                 whiteStones.remove(new PairInt(x, y));
                 blackStones.add(new PairInt(x, y));
                 flipped.add(new PairInt(x, y));
@@ -206,7 +220,7 @@ public class Board {
         x += direction.x;
         y += direction.y;
         while (isBoardCoords(x, y) &&
-                (forWhite ? fields[x][y] == '-' : fields[x][y] == '+')) {
+                (forWhite ? fields[x][y] == blackSymbol : fields[x][y] == whiteSymbol)) {
             x += direction.x;
             y += direction.y;
             ++lineLength;
@@ -230,7 +244,7 @@ public class Board {
         y += direction.y;
         int lineLength = 0;
         while (isBoardCoords(x, y)) {
-            if (whiteToMove ? fields[x][y] == '-' : fields[x][y] == '+') {
+            if (whiteToMove ? fields[x][y] == blackSymbol : fields[x][y] == whiteSymbol) {
                 ++lineLength;
             } else {
                 break;
@@ -239,7 +253,7 @@ public class Board {
             y += direction.y;
         }
         if (!isBoardCoords(x, y) ||
-                (whiteToMove ? fields[x][y] != '+' : fields[x][y] != '-')) {
+                (whiteToMove ? fields[x][y] != whiteSymbol : fields[x][y] != blackSymbol)) {
             return false;
         }
         return lineLength != 0;
@@ -349,7 +363,7 @@ public class Board {
                 if (highlight &&
                         (whiteToMove ? whitePossibleMoves.contains(new PairInt(i, j)) :
                                 blackPossibleMoves.contains(new PairInt(i, j)))) {
-                    System.out.print("o ");
+                    System.out.print(possibleMoveSymbol + " ");
                     continue;
                 }
                 System.out.print(fields[i][j] + " ");

@@ -4,10 +4,7 @@ public final class ConstStrings {
     public static final String FAREWELL = "Пока!\n";
     public static final String OPTIONS_WARNING =
             """
-            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
             !Пожалуйста, введите корректное значение!
-            Вот же они, слева направо:
-            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
             """;
     public static final String GREETING =
             """
@@ -17,6 +14,7 @@ public final class ConstStrings {
             1. Начать игру
             2. Посмотреть лучший результат
             3. Выйти из игры
+            4. Изменить скин
             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             """;
     public static final String GAME_PAGE_TEXT =
@@ -55,5 +53,12 @@ public final class ConstStrings {
             1. ПЛЮСЫ
             2. МИНУСЫ
             """;
+    public static final char [][] SKINS =
+            {{'+', '-', 'o'}, {'●', '○', '.'}, {'W', 'B', 'P'}};
+    public static final String CHOOSE_SKIN =
+            "Выберите скин:\n" +
+                    "1. Плюсоминусы " + SKINS[0][0] + SKINS[0][1] + SKINS[0][2] + '\n' +
+                    "2. Кружочки " + SKINS[1][0] + SKINS[1][1] + SKINS[1][2] + '\n' +
+                    "3. Буквы " + SKINS[2][0] + SKINS[2][1] + SKINS[2][2] + '\n';
     private ConstStrings() {}
 }

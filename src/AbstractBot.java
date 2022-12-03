@@ -5,11 +5,13 @@ public abstract class AbstractBot {
     protected Board board;
     protected HashSet<PairInt> moves;
     protected double costOfLastMove = 0;
+    protected char[] skin;
 
     public void setBoard(boolean color, Board board, HashSet<PairInt> moves) {
         this.moves = moves;
         this.isWhite = color;
         this.board = board;
+        this.skin = board.getSkin();
     }
 
     public double getLastCost() {
@@ -30,7 +32,7 @@ public abstract class AbstractBot {
         x += direction.x;
         y += direction.y;
         while (Board.isBoardCoords(x, y) &&
-                (isWhite ? board.getFields(x, y) == '-' : board.getFields(x, y) == '+')) {
+                (isWhite ? board.getFields(x, y) == skin[1] : board.getFields(x, y) == skin[0])) {
             if (!sideLine || isSide(new PairInt(x, y))) {
                 ++lineLength;
             }
@@ -38,7 +40,7 @@ public abstract class AbstractBot {
             y += direction.y;
         }
         if (!Board.isBoardCoords(x, y) ||
-                (isWhite ? board.getFields(x, y) != '+' : board.getFields(x, y) != '-')) {
+                (isWhite ? board.getFields(x, y) != skin[0] : board.getFields(x, y) != skin[1])) {
             return 0;
         }
         return lineLength;

@@ -4,6 +4,7 @@ public class Menu {
     private static int bestScore = -1;
     private static int bestWhiteScore = -1;
     private static int bestBlackScore = -1;
+    private static int skinNumber = 1;
     private static Board board;
 
     private Menu() {}
@@ -15,16 +16,18 @@ public class Menu {
         }
         return 0;
     }
-
-    private static int pageSwitch(String pageText, int numberOfPoints) {
-        System.out.print(pageText);
-        String option = sc.next();
+    private static int optionsGet(int numberOfPoints) {
         int point;
-        while ((point = optionsCheck(option, numberOfPoints)) == 0) {
-            System.out.print(ConstStrings.OPTIONS_WARNING + pageText);
+        String option = sc.next();
+        while((point = optionsCheck(option, numberOfPoints)) == 0) {
+            System.out.println(ConstStrings.OPTIONS_WARNING);
             option = sc.next();
         }
         return point;
+    }
+    private static int pageSwitch(String pageText, int numberOfPoints) {
+        System.out.print(pageText);
+        return optionsGet(numberOfPoints);
     }
     private static int gameFirstPage() {
         return switch (pageSwitch(ConstStrings.GAME_PAGE_TEXT, 4)) {
@@ -33,6 +36,10 @@ public class Menu {
             case 3 -> 6; // chose game with hard bot
             default -> 1;
         };
+    }
+    private static int skinSelect() {
+        System.out.println(ConstStrings.CHOOSE_SKIN);
+        return optionsGet(3) - 1;
     }
     private static void scorePage() {
         System.out.print(ConstStrings.PLAYER_SCORE);
@@ -47,13 +54,7 @@ public class Menu {
 
     public static boolean getBotColor() {
         System.out.println(ConstStrings.CHOOSE_COLOR);
-        int point;
-        String option = sc.next();
-        while((point = optionsCheck(option, 2)) == 0) {
-            System.out.println(ConstStrings.OPTIONS_WARNING);
-            option = sc.next();
-        }
-        return point != 1;
+        return optionsGet(2) != 1;
     }
     private static void finishGame(int opponent) {
         if (board.wasExit()) {
@@ -79,6 +80,7 @@ public class Menu {
     }
     private static void startGame(int opponent) {
         board = new Board();
+        board.setSkin(ConstStrings.SKINS[skinNumber]);
         board.setOpponent(opponent);
         Bot bot = new EasyBot();
         if (opponent != 0) {
@@ -94,9 +96,11 @@ public class Menu {
         finishGame(opponent);
     }
     private static int mainPage() {
-        return switch (pageSwitch(ConstStrings.GREETING, 3)) {
+        return switch (pageSwitch(ConstStrings.GREETING, 4)) {
             case 1 -> 2; // chose begin game
             case 2 -> 3; // chose best result
+            case 3 -> 0;
+            case 4 -> 7; // chose skins
             default -> 0; // chose exit
         };
     }
@@ -121,6 +125,10 @@ public class Menu {
                 case 6 -> {
                     state = 1;
                     startGame(2);
+                }
+                case 7 -> {
+                    skinNumber = skinSelect();
+                    state = 1;
                 }
             }
         }

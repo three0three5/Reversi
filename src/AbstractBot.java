@@ -17,13 +17,16 @@ public abstract class AbstractBot {
     public double getLastCost() {
         return costOfLastMove;
     }
+
     protected static boolean isCorner(PairInt move) {
         return move.x == 0 && move.y == 0 || move.x == 7 && move.y == 7 ||
                 move.x == 0 && move.y == 7 || move.x == 7 && move.y == 0;
     }
+
     protected static boolean isSide(PairInt move) {
         return move.x == 0 || move.x == 7 || move.y == 0 || move.y == 7;
     }
+
     protected int lineCounter(PairInt move, int directionInt, boolean sideLine) {
         if (directionInt == 4) return 0;
         int x = move.x, y = move.y;
@@ -45,6 +48,7 @@ public abstract class AbstractBot {
         }
         return lineLength;
     }
+
     protected int piecesFlipped(PairInt move, boolean onlyOnSide) {
         int result = 0;
         for (int i = 0; i < 9; ++i) {
@@ -55,6 +59,7 @@ public abstract class AbstractBot {
         }
         return result;
     }
+
     protected double findCost(PairInt move) {
         if (move.x == -1) {
             return 0;

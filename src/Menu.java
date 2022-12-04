@@ -1,4 +1,8 @@
 import java.util.Scanner;
+
+/**
+ * Menu - класс процедура с точкой входа start()
+ */
 public class Menu {
     private static final Scanner sc = new Scanner(System.in);
     private static int bestScore = -1;
@@ -7,7 +11,9 @@ public class Menu {
     private static int skinNumber = 1;
     private static Board board;
 
-    private Menu() {}
+    private Menu() { // этот класс не нуждается в экземплярах
+    }
+
     private static int optionsCheck(String option, int numberOfPoints) {
         for (int i = 1; i <= numberOfPoints; ++i) {
             if (Integer.toString(i).equals(option)) {
@@ -16,19 +22,22 @@ public class Menu {
         }
         return 0;
     }
+
     private static int optionsGet(int numberOfPoints) {
         int point;
         String option = sc.next();
-        while((point = optionsCheck(option, numberOfPoints)) == 0) {
+        while ((point = optionsCheck(option, numberOfPoints)) == 0) {
             System.out.println(ConstStrings.OPTIONS_WARNING);
             option = sc.next();
         }
         return point;
     }
+
     private static int pageSwitch(String pageText, int numberOfPoints) {
         System.out.print(pageText);
         return optionsGet(numberOfPoints);
     }
+
     private static int gameFirstPage() {
         return switch (pageSwitch(ConstStrings.GAME_PAGE_TEXT, 4)) {
             case 1 -> 4; // chose game with no bot
@@ -37,10 +46,11 @@ public class Menu {
             default -> 1;
         };
     }
+
     private static int skinSelect() {
-        System.out.println(ConstStrings.CHOOSE_SKIN);
-        return optionsGet(3) - 1;
+        return pageSwitch(ConstStrings.CHOOSE_SKIN, 3) - 1;
     }
+
     private static void scorePage() {
         System.out.print(ConstStrings.PLAYER_SCORE);
         System.out.println(bestScore == -1 ? ConstStrings.NO_SCORE : bestScore);
@@ -53,9 +63,9 @@ public class Menu {
     }
 
     public static boolean getBotColor() {
-        System.out.println(ConstStrings.CHOOSE_COLOR);
-        return optionsGet(2) != 1;
+        return pageSwitch(ConstStrings.CHOOSE_COLOR, 2) != 1;
     }
+
     private static void finishGame(int opponent) {
         if (board.wasExit()) {
             return;
@@ -78,6 +88,7 @@ public class Menu {
             }
         }
     }
+
     private static void startGame(int opponent) {
         board = new Board();
         board.setSkin(ConstStrings.SKINS[skinNumber]);
@@ -95,6 +106,7 @@ public class Menu {
         }
         finishGame(opponent);
     }
+
     private static int mainPage() {
         return switch (pageSwitch(ConstStrings.GREETING, 4)) {
             case 1 -> 2; // chose begin game
@@ -104,6 +116,15 @@ public class Menu {
             default -> 0; // chose exit
         };
     }
+
+    /**
+     * Метод для переключения состояний меню
+     * 1 - заглавная страница
+     * 2 - страница для выбора оппонента
+     * 3 - страница счета
+     * 4, 5, 6 - начать игру с человеком или легким/сложным ботом
+     * 7 - выбрать скин для фигур
+     */
     public static void start() {
         int state = mainPage();
         while (state != 0) {

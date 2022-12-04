@@ -11,6 +11,7 @@ public class PairInt {
         this.x = other.x;
         this.y = other.y;
     }
+
     @Override
     public int hashCode() {
         int hash = 17;
@@ -18,6 +19,7 @@ public class PairInt {
         hash = hash * 31 + this.y;
         return hash;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PairInt other)) {

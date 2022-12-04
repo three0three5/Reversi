@@ -15,6 +15,11 @@ public class Board {
     private final Stack<ArrayList<PairInt>> flippedPieces = new Stack<>();
     private final Stack<Boolean> lastMoveByWhite = new Stack<>();
     private boolean whiteToMove = false;
+    /**
+     * Использование поля в виде двумерного массива символов одновременно с множеством
+     * белых и черных камней нужно только для удобства.
+     * Размер доски предполагается 8х8
+     */
     private final char[][] fields;
     private int opponent = 0;
     private final HashSet<PairInt> whiteStones = new HashSet<>();
@@ -39,33 +44,34 @@ public class Board {
         blackStones.add(new PairInt(4, 3));
         recountPossibleMoves();
     }
-    private void recolorCentralPieces() {
-        fields[3][3] = whiteSymbol;
-        fields[4][4] = whiteSymbol;
-        fields[3][4] = blackSymbol;
-        fields[4][3] = blackSymbol;
-    }
+
     public void setSkin(char[] skin) {
         whiteSymbol = skin[0];
         blackSymbol = skin[1];
         possibleMoveSymbol = skin[2];
         recolorCentralPieces();
     }
+
     public char[] getSkin() {
         return new char[]{whiteSymbol, blackSymbol, possibleMoveSymbol};
     }
+
     public void setOpponent(int opponent) {
         this.opponent = opponent;
     }
+
     public void setBotColor(boolean color) {
         botColorIsWhite = color;
     }
+
     public boolean getHumanColor() {
         return !botColorIsWhite;
     }
+
     public void setBot(Bot bot) {
         this.bot = bot;
     }
+
     public HashSet<PairInt> getMoves(boolean isWhite) {
         if (isWhite) {
             return whitePossibleMoves;
@@ -80,6 +86,7 @@ public class Board {
         }
         return whiteStones.size() != 0 && blackStones.size() != 0;
     }
+
     public boolean wasExit() {
         return exit;
     }
@@ -98,6 +105,7 @@ public class Board {
         }
         return fields[x][y];
     }
+
     public void placePiece(int x, int y) {
         if (x < 0 || x > 7 || y < 0 || y > 7) {
             return;
@@ -135,7 +143,7 @@ public class Board {
         }
         fields[move.x][move.y] = ' ';
         ArrayList<PairInt> flipped = flippedPieces.pop();
-        for (PairInt x: flipped) {
+        for (PairInt x : flipped) {
             if (fields[x.x][x.y] == whiteSymbol) {
                 fields[x.x][x.y] = blackSymbol;
                 blackStones.add(new PairInt(x.x, x.y));
@@ -155,6 +163,13 @@ public class Board {
                 bot.setBoard(false, this, blackPossibleMoves);
             }
         }
+    }
+
+    private void recolorCentralPieces() {
+        fields[3][3] = whiteSymbol;
+        fields[4][4] = whiteSymbol;
+        fields[3][4] = blackSymbol;
+        fields[4][3] = blackSymbol;
     }
 
     private static boolean isCorrectCoords(String s) {
@@ -293,6 +308,7 @@ public class Board {
             exit = true;
         }
     }
+
     private PairInt askHuman(Scanner sc) {
         if (whiteToMove) {
             System.out.print("ПЛЮСЫ");
@@ -373,7 +389,7 @@ public class Board {
         if (highlight) {
             HashSet<PairInt> moves = whiteToMove ? whitePossibleMoves : blackPossibleMoves;
             System.out.print("Возможные ходы: ");
-            for (PairInt move: moves) {
+            for (PairInt move : moves) {
                 System.out.print((char) (move.x + 'A'));
                 System.out.print((char) (move.y + '1'));
                 System.out.print(" ");
